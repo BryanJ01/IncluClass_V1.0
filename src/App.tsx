@@ -8,6 +8,8 @@ import ActivitiesPage from './pages/ActivitiesPage';
 import AdaptationsPage from './pages/AdaptationsPage';
 import CommunityPage from './pages/CommunityPage';
 import ResourcesPage from './pages/ResourcesPage';
+import ProfilePage from './pages/ProfilePage';
+import MainContent from './components/MainContent';
 
 /*function App() {
   // Simple auth state management (you'd want to use a proper auth system in production)
@@ -69,6 +71,7 @@ function App() {
             <Route path="/adaptations" element={<AdaptationsPage />} />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/" element={<ActivitiesPage />} />
           </Routes>
         </div>
@@ -76,6 +79,7 @@ function App() {
     </Router>
   );
 }
+  
 
 
 export default App;

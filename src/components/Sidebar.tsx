@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
+  Calculator, 
   BookOpen, 
-  Brain, 
-  Palette, 
+  TestTube,
+  BookMarked,
   Dumbbell,
   Users,
   Tag,
@@ -29,16 +30,20 @@ const Sidebar = () => {
         <div className="space-y-1">
           <h4 className="text-sm font-semibold text-gray-500 mb-2">Categorías</h4>
           <Link to="/subjects/math" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg">
-            <BookOpen className="h-5 w-5" />
+            <Calculator className="h-5 w-5" />
             <span>Matemáticas</span>
           </Link>
-          <Link to="/subjects/science" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg">
-            <Brain className="h-5 w-5" />
-            <span>Ciencia</span>
+          <Link to="/subjects/reading-writing" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg">
+            <BookOpen className="h-5 w-5" />
+            <span>Lectura y Escritura</span>
           </Link>
-          <Link to="/subjects/art" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg">
-            <Palette className="h-5 w-5" />
-            <span>Arte</span>
+          <Link to="/subjects/science" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg">
+            <TestTube className="h-5 w-5" />
+            <span>Ciencias Naturales</span>
+          </Link>
+          <Link to="/subjects/history" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg">
+            <BookMarked className="h-5 w-5" />
+            <span>Historia</span>
           </Link>
           <Link to="/subjects/pe" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg">
             <Dumbbell className="h-5 w-5" />
