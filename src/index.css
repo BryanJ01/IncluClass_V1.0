@@ -24,7 +24,7 @@
   }
 }
 
-/* New Animations */
+/* Interactive Animations */
 @keyframes pulse-shadow {
   0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.3); }
   70% { box-shadow: 0 0 0 10px rgba(147, 51, 234, 0); }
@@ -52,6 +52,32 @@
 @keyframes scale-up {
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+/* Blob Animation */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+/* Grid Animation */
+@keyframes grid-movement {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
 }
 
 /* Animation Classes */
@@ -83,11 +109,25 @@
   animation: scale-up 0.3s ease-out;
 }
 
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animate-grid-movement {
+  animation: grid-movement 20s linear infinite;
+}
+
 /* Custom Utility Classes */
 .gradient-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600;
   background-size: 200% 200%;
   animation: gradient-shift 3s ease infinite;
+}
+
+.bg-grid-pattern {
+  background-image: linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
 .input-focus-ring {
@@ -121,17 +161,16 @@
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
 
-/* Error State Animations */
+/* State Animations */
 .input-error {
   animation: shake 0.3s ease-in-out;
 }
 
-/* Success State Animations */
 .input-success {
   animation: scale-up 0.3s ease-out;
 }
 
-/* Loading State Animations */
+/* Loading Animation */
 .loading-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

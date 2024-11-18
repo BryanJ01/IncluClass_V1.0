@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Activity } from '../types/activity';
+import { Activity } from '../../types/activity';
 import { 
   ArrowLeft, 
   Heart, 
@@ -60,6 +60,15 @@ const DetailedActivityView: React.FC<DetailedActivityViewProps> = ({ activities 
     }
   };
 
+  // Parse JSON strings to arrays if needed
+  const objectives = typeof activity.objectives === 'string' 
+    ? JSON.parse(activity.objectives) 
+    : activity.objectives;
+
+  const materials = typeof activity.materials === 'string'
+    ? JSON.parse(activity.materials)
+    : activity.materials;
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -92,13 +101,13 @@ const DetailedActivityView: React.FC<DetailedActivityViewProps> = ({ activities 
 
             <div className="flex items-center space-x-4 mb-6">
               <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50"
-                alt={activity.author}
+                src={activity.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activity.author.name)}`}
+                alt={activity.author.name}
                 className="w-10 h-10 rounded-full"
               />
               <div>
-                <p className="text-gray-900 font-medium">{activity.author}</p>
-                <p className="text-gray-500 text-sm">{activity.timeAgo}</p>
+                <p className="text-gray-900 font-medium">{activity.author.name}</p>
+                <p className="text-gray-500 text-sm">{activity.author.specialty}</p>
               </div>
             </div>
 
@@ -113,7 +122,7 @@ const DetailedActivityView: React.FC<DetailedActivityViewProps> = ({ activities 
                   Objetivos
                 </h2>
                 <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  {activity.objectives.map((objective, index) => (
+                  {objectives.map((objective: string, index: number) => (
                     <li key={index} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                       {objective}
                     </li>
@@ -135,7 +144,7 @@ const DetailedActivityView: React.FC<DetailedActivityViewProps> = ({ activities 
                   Materiales Necesarios
                 </h2>
                 <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  {activity.materials.map((material, index) => (
+                  {materials.map((material: string, index: number) => (
                     <li key={index} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                       {material}
                     </li>

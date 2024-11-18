@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int        @id @default(autoincrement())
+  email      String     @unique
+  name       String
+  password   String
+  specialty  String
+  avatar     String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  activities Activity[]
+  comments   Comment[]
+  likes      Like[]
+}
+
+model Activity {
+  id                  Int       @id @default(autoincrement())
+  title               String
+  description         String    @db.Text
+  subject            String
+  specialNeed        String
+  detailedDescription String    @db.Text
+  explanation        String    @db.Text
+  sourceUrl          String?   @db.Text
+  objectives         Json      // Stored as JSON array
+  duration           String
+  materials          Json      // Stored as JSON array
+  image              String?   // URL to the image
+  authorId           Int
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  author             User       @relation(fields: [authorId], references: [id])
+  comments           Comment[]
+  likes              Like[]
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  activityId Int
+  userId     Int
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([activityId])
+}
+
+model Like {
+  activityId Int
+  userId     Int
+  createdAt  DateTime @default(now())
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@id([activityId, userId])
+  @@index([userId])
+  @@index([activityId])
+}
