@@ -3,30 +3,36 @@ import { X, Plus, Trash2 } from 'lucide-react';
 import { Activity } from '../../types/activity';
 import { toast } from 'react-hot-toast';
 
-interface NewActivityModalProps {
+interface EditActivityModalProps {
+  activity: Activity;
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (activity: Activity) => void;
+  onUpdate: (updatedActivity: Activity) => void;
 }
 
-const NewActivityModal: React.FC<NewActivityModalProps> = ({
+const EditActivityModal: React.FC<EditActivityModalProps> = ({
+  activity,
   isOpen,
   onClose,
   onUpdate
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    subject: '',
-    specialNeed: '',
-    detailedDescription: '',
-    explanation: '',
-    sourceUrl: '',
-    objectives: [''],
-    duration: '',
-    materials: [''],
-    image: ''
+    title: activity.title,
+    description: activity.description,
+    subject: activity.subject,
+    specialNeed: activity.specialNeed,
+    detailedDescription: activity.detailedDescription,
+    explanation: activity.explanation,
+    sourceUrl: activity.sourceUrl || '',
+    objectives: typeof activity.objectives === 'string' 
+      ? JSON.parse(activity.objectives) 
+      : activity.objectives,
+    duration: activity.duration,
+    materials: typeof activity.materials === 'string'
+      ? JSON.parse(activity.materials)
+      : activity.materials,
+    image: activity.image || ''
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -58,10 +64,10 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
     if (!formData.duration) {
       newErrors.duration = 'La duración es requerida';
     }
-    if (formData.objectives.every(obj => !obj.trim())) {
+    if (formData.objectives.every((obj: string) => !obj.trim())) {
       newErrors.objectives = 'Debes agregar al menos un objetivo';
     }
-    if (formData.materials.every(mat => !mat.trim())) {
+    if (formData.materials.every((mat: string) => !mat.trim())) {
       newErrors.materials = 'Debes agregar al menos un material';
     }
     if (formData.image && !formData.image.match(/^https?:\/\/.+/)) {
@@ -129,14 +135,14 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
       const token = localStorage.getItem('token');
       const dataToSend = {
         ...formData,
-        objectives: formData.objectives.filter(obj => obj.trim() !== ''),
-        materials: formData.materials.filter(mat => mat.trim() !== ''),
+        objectives: formData.objectives.filter((obj: string) => obj.trim() !== ''),
+        materials: formData.materials.filter((mat: string) => mat.trim() !== ''),
         sourceUrl: formData.sourceUrl || null,
         image: formData.image || null
       };
 
-      const response = await fetch('http://localhost:5001/api/activities', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:5001/api/activities/${activity.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -153,14 +159,14 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
           ).join('\n');
           throw new Error(errorMessages);
         }
-        throw new Error(data.error || 'Error al crear la actividad');
+        throw new Error(data.error || 'Error al actualizar la actividad');
       }
 
-      toast.success('Actividad creada exitosamente');
+      toast.success('Actividad actualizada exitosamente');
       onUpdate(data);
       onClose();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error al crear la actividad');
+      toast.error(error instanceof Error ? error.message : 'Error al actualizar la actividad');
     } finally {
       setIsLoading(false);
     }
@@ -173,7 +179,7 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
       <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Crear Nueva Actividad</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Editar Actividad</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 transition-colors"
@@ -183,6 +189,8 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Campos del formulario igual que en NewActivityModal */}
+            {/* ... */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Título
@@ -342,7 +350,7 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Objetivos
               </label>
-              {formData.objectives.map((objective, index) => (
+              {formData.objectives.map((objective: string, index: number) => (
                 <div key={index} className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -401,7 +409,7 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Materiales
               </label>
-              {formData.materials.map((material, index) => (
+              {formData.materials.map((material: string, index: number) => (
                 <div key={index} className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -468,7 +476,7 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
                 disabled={isLoading}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
               >
-                {isLoading ? 'Creando...' : 'Crear Actividad'}
+                {isLoading ? 'Guardando...' : 'Guardar Cambios'}
               </button>
             </div>
           </form>
@@ -478,4 +486,4 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({
   );
 };
 
-export default NewActivityModal;
+export default EditActivityModal;

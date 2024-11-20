@@ -6,10 +6,11 @@ import { toast } from 'react-hot-toast';
 import ActivityCard from '../components/activities/ActivityCard';
 import NewActivityModal from '../components/activities/NewActivityModal';
 import FilterModal from '../components/FilterModal';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const ActivitiesPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -57,35 +58,36 @@ const ActivitiesPage = () => {
     );
   };
 
+  const handleActivityDelete = (deletedActivityId: number) => {
+    setActivities(prevActivities => 
+      prevActivities.filter(activity => activity.id !== deletedActivityId)
+    );
+  };
+
   const handleNewActivity = (newActivity: Activity) => {
     setActivities(prev => [newActivity, ...prev]);
     setIsModalOpen(false);
   };
 
   const handleFilterChange = (newFilters: { subject: string; specialNeed: string }) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
     
     if (newFilters.subject) {
       params.set('subject', newFilters.subject);
-    } else {
-      params.delete('subject');
     }
     
     if (newFilters.specialNeed) {
       params.set('specialNeed', newFilters.specialNeed);
-    } else {
-      params.delete('specialNeed');
     }
     
-    setSearchParams(params);
+    navigate(`/activities?${params.toString()}`);
     setIsFilterModalOpen(false);
   };
 
   const filteredActivities = activities.filter(activity => {
     const matchesTab = activeTab === 'my' ? activity.author.id === user?.id : true;
-    const matchesSearch = 
-      activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         activity.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSubject = currentSubject ? activity.subject === currentSubject : true;
     const matchesSpecialNeed = currentSpecialNeed ? activity.specialNeed === currentSpecialNeed : true;
 
@@ -189,16 +191,19 @@ const ActivitiesPage = () => {
                 key={activity.id} 
                 activity={activity} 
                 onUpdate={handleActivityUpdate}
+                onDelete={handleActivityDelete}
               />
             ))}
           </div>
         )}
 
-        <NewActivityModal 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)}
-          onActivityCreated={handleNewActivity}
-        />
+        {isModalOpen && (
+          <NewActivityModal 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)}
+            onUpdate={handleNewActivity}
+          />
+        )}
 
         <FilterModal
           isOpen={isFilterModalOpen}

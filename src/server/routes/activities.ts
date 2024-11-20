@@ -30,11 +30,9 @@ router.post('/', authenticateToken, async (req, res) => {
       image: req.body.image || null
     });
     
-    // Procesar objetivos y materiales
     const objectives = Array.isArray(data.objectives) ? data.objectives : JSON.parse(data.objectives);
     const materials = Array.isArray(data.materials) ? data.materials : JSON.parse(data.materials);
     
-    // Si no se proporciona una imagen, usar la imagen por defecto según la materia
     const image = data.image || getDefaultImageBySubject(data.subject);
 
     const activity = await prisma.activity.create({
@@ -173,6 +171,116 @@ router.get('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error fetching activity:', error);
     res.status(500).json({ error: 'Error al obtener la actividad' });
+  }
+});
+
+// Update activity
+router.put('/:id', authenticateToken, async (req, res) => {
+  try {
+    const activityId = parseInt(req.params.id);
+    const activity = await prisma.activity.findUnique({
+      where: { id: activityId }
+    });
+
+    if (!activity) {
+      return res.status(404).json({ error: 'Actividad no encontrada' });
+    }
+
+    if (activity.authorId !== req.user.id) {
+      return res.status(403).json({ error: 'No tienes permiso para editar esta actividad' });
+    }
+
+    const data = activitySchema.parse({
+      ...req.body,
+      sourceUrl: req.body.sourceUrl || null,
+      image: req.body.image || null
+    });
+
+    const objectives = Array.isArray(data.objectives) ? data.objectives : JSON.parse(data.objectives);
+    const materials = Array.isArray(data.materials) ? data.materials : JSON.parse(data.materials);
+    
+    const image = data.image || getDefaultImageBySubject(data.subject);
+
+    const updatedActivity = await prisma.activity.update({
+      where: { id: activityId },
+      data: {
+        title: data.title,
+        description: data.description,
+        subject: data.subject,
+        specialNeed: data.specialNeed,
+        detailedDescription: data.detailedDescription,
+        explanation: data.explanation,
+        sourceUrl: data.sourceUrl,
+        objectives: JSON.stringify(objectives),
+        duration: data.duration,
+        materials: JSON.stringify(materials),
+        image
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            specialty: true,
+            avatar: true
+          }
+        },
+        comments: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                avatar: true
+              }
+            }
+          }
+        },
+        likes: true
+      }
+    });
+
+    res.json(updatedActivity);
+  } catch (error) {
+    console.error('Error updating activity:', error);
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ 
+        error: 'Error de validación',
+        details: error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message
+        }))
+      });
+    } else {
+      res.status(500).json({ error: 'Error al actualizar la actividad' });
+    }
+  }
+});
+
+// Delete activity
+router.delete('/:id', authenticateToken, async (req, res) => {
+  try {
+    const activityId = parseInt(req.params.id);
+    const activity = await prisma.activity.findUnique({
+      where: { id: activityId }
+    });
+
+    if (!activity) {
+      return res.status(404).json({ error: 'Actividad no encontrada' });
+    }
+
+    if (activity.authorId !== req.user.id) {
+      return res.status(403).json({ error: 'No tienes permiso para eliminar esta actividad' });
+    }
+
+    await prisma.activity.delete({
+      where: { id: activityId }
+    });
+
+    res.json({ message: 'Actividad eliminada exitosamente' });
+  } catch (error) {
+    console.error('Error deleting activity:', error);
+    res.status(500).json({ error: 'Error al eliminar la actividad' });
   }
 });
 
