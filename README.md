@@ -8,7 +8,7 @@ Nuestro objetivo es fomentar una educación más accesible, personalizada y efec
 
 | Actividades | Crear | Único | Main | Materias |
 |:-----------:|:-----:|:-----:|:----:|:--------:|
-| ![Actividades](./public/Actividades.png) | ![Crear](./public/Crear.png) | ![Único](./public/Unico.png) | ![Main](./public/Main.png) | ![Materias](./public/Materias.png) |
+| ![Actividades](./public/Actividades.png) | ![Crear](./public/Crear.png) | ![Inicio](./public/Inicio.png) | ![Main](./public/Main.png) | ![Materias](./public/Materias.png) |
 
 🎥 **Video de demostración:**  
 [![Demostración](./public/Demostración.mov)](./public/Demostración.mov)
