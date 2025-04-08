@@ -104,7 +104,7 @@ const Hero = () => {
             <div className="relative pt-[56.25%]">
               <iframe
                 className="absolute inset-0 w-full h-full rounded-lg"
-                src="/public/DemoDemostracion.mov"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
                 title="Demo Video"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
